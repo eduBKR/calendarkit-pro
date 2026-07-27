@@ -13,6 +13,7 @@ import { EventModal } from './components/EventModal';
 import { MonthViewSkeleton, WeekViewSkeleton, DayViewSkeleton, AgendaViewSkeleton } from './components/Skeleton';
 import { EventContextMenu, useEventContextMenu } from './components/ContextMenu';
 import { CalendarProps, CalendarEvent } from './types';
+import { en, fr } from './locales';
 import { cn } from './utils';
 import { getThemeStyles } from './lib/theme';
 import { useCalendarLogic } from './hooks/useCalendarLogic';
@@ -151,32 +152,13 @@ export const Scheduler: React.FC<CalendarProps> = ({
   // Mobile swipe gesture support
   const swipeRef = useViewSwipe<HTMLDivElement>(handlePrev, handleNext, true);
 
-  // Default Translations
+  // Base translations come from the built-in language packs (making the
+  // `language` prop actually apply everywhere); the consumer's `translations`
+  // prop overrides individual keys.
+  const languagePack = language === 'fr' ? fr : en;
+
   const t = {
-    today: 'Today',
-    month: 'Month',
-    week: 'Week',
-    day: 'Day',
-    agenda: 'Agenda',
-    resource: 'Resource',
-    createEvent: 'Create Event',
-    editEvent: 'Edit Event',
-    delete: 'Delete',
-    save: 'Save',
-    cancel: 'Cancel',
-    title: 'Title',
-    start: 'Start',
-    end: 'End',
-    allDay: 'All Day',
-    description: 'Description',
-    repeat: 'Repeat',
-    noRepeat: 'Does not repeat',
-    selectCalendar: 'Select Calendar',
-    selectType: 'Select Type',
-    daily: 'Daily',
-    weekly: 'Weekly',
-    monthly: 'Monthly',
-    yearly: 'Yearly',
+    ...languagePack,
     ...translations
   };
 
@@ -296,6 +278,7 @@ export const Scheduler: React.FC<CalendarProps> = ({
                     calendars={calendars}
                     onCalendarToggle={onCalendarToggle}
                     translations={t}
+                    locale={locale}
                 />
             </motion.div>
 
@@ -377,6 +360,8 @@ export const Scheduler: React.FC<CalendarProps> = ({
                                     events={filteredEvents}
                                     onEventClick={handleEventClickInternal}
                                     onCreateEvent={handleCreateEvent}
+                                    locale={locale}
+                                    translations={t}
                                 />
                             )}
                             {view === 'resource' && resources && (
@@ -463,9 +448,9 @@ export const Scheduler: React.FC<CalendarProps> = ({
             closeContextMenu();
           }}
           translations={{
-            edit: t.editEvent || 'Edit',
+            edit: t.edit || t.editEvent || 'Edit',
             delete: t.delete || 'Delete',
-            duplicate: 'Duplicate',
+            duplicate: t.duplicate || 'Duplicate',
           }}
         />
 
