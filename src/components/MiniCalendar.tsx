@@ -29,9 +29,18 @@ export const MiniCalendar: React.FC<MiniCalendarProps> = ({
     setViewDate(currentDate);
   }, [currentDate]);
 
-  const days = React.useMemo(() => getMonthGrid(viewDate), [viewDate]);
+  // Week start follows the locale's convention (Sunday fallback, matching
+  // the hardcoded initials below).
+  const weekStartsOn = locale?.options?.weekStartsOn ?? 0;
+  const days = React.useMemo(
+    () => getMonthGrid(viewDate, weekStartsOn),
+    [viewDate, weekStartsOn],
+  );
   const weekDays = locale?.localize
-    ? [0, 1, 2, 3, 4, 5, 6].map(d => locale.localize.day(d as 0 | 1 | 2 | 3 | 4 | 5 | 6, { width: 'narrow' }))
+    ? [0, 1, 2, 3, 4, 5, 6].map(d => {
+        const dayIndex = ((d + weekStartsOn) % 7) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
+        return locale.localize.day(dayIndex, { width: 'narrow' });
+      })
     : ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
   const handlePrev = () => {

@@ -30,9 +30,11 @@ export const WeekView: React.FC<WeekViewProps> = ({
   locale,
   readonly,
 }) => {
-  // Generate days for the week
-  const start = startOfWeek(currentDate, { weekStartsOn: 1 });
-  const end = endOfWeek(currentDate, { weekStartsOn: 1 });
+  // Generate days for the week following the locale's convention (falls
+  // back to the historical Monday start without a locale).
+  const weekStartsOn = locale?.options?.weekStartsOn ?? 1;
+  const start = startOfWeek(currentDate, { weekStartsOn });
+  const end = endOfWeek(currentDate, { weekStartsOn });
   const weekDays = eachDayOfInterval({ start, end });
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
