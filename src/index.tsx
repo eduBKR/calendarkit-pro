@@ -16,6 +16,7 @@ import { CalendarProps, CalendarEvent } from './types';
 import { en, fr } from './locales';
 import { cn } from './utils';
 import { getThemeStyles } from './lib/theme';
+import { uses24HourClock } from './lib/date';
 import { useCalendarLogic } from './hooks/useCalendarLogic';
 import { differenceInMinutes, format } from 'date-fns';
 import { useViewSwipe } from './hooks/useSwipeGesture';
@@ -161,6 +162,9 @@ export const Scheduler: React.FC<CalendarProps> = ({
     ...languagePack,
     ...translations
   };
+
+  // Drag ghost times follow the locale's clock convention.
+  const overlayTimeFormat = uses24HourClock(locale) ? 'H:mm' : 'h:mm a';
 
   const handleDragStart = (event: any) => {
     const { active } = event;
@@ -488,7 +492,7 @@ export const Scheduler: React.FC<CalendarProps> = ({
                                 <circle cx="12" cy="12" r="10"/>
                                 <path d="M12 6v6l4 2"/>
                               </svg>
-                              {format(activeDragEvent.start, 'h:mm a')} - {format(activeDragEvent.end, 'h:mm a')}
+                              {format(activeDragEvent.start, overlayTimeFormat, { locale })} - {format(activeDragEvent.end, overlayTimeFormat, { locale })}
                             </div>
                           )}
                         </div>

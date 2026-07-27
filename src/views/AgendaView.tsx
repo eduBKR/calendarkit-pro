@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { format, isSameDay, isToday, isTomorrow, addDays, startOfDay, differenceInMinutes, Locale } from 'date-fns';
 import { CalendarEvent, CalendarTranslations } from '../types';
 import { cn } from '../utils';
+import { uses24HourClock } from '../lib/date';
 import { AgendaEmptyState } from '../components/EmptyState';
 import { motion } from 'framer-motion';
 import { Clock, MapPin, Users, Paperclip, Bell } from 'lucide-react';
@@ -42,10 +43,11 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
   locale,
   translations,
 }) => {
-  // With an explicit locale, times use its own convention (e.g. 24h) via the
-  // localized `p` pattern; the historical 12h format stays the default.
-  const timePattern = locale ? 'p' : 'h:mm a';
-  const compactTimePattern = locale ? 'p' : 'h:mm';
+  // Times follow the locale's clock convention (e.g. 24h for pt-BR/fr); the
+  // historical 12h format stays the default without a locale.
+  const is24h = uses24HourClock(locale);
+  const timePattern = is24h ? 'H:mm' : 'h:mm a';
+  const compactTimePattern = is24h ? 'H:mm' : 'h:mm';
   // Group events by day for the next 30 days starting from currentDate
   const groupedEvents = useMemo(() => {
     const startDate = startOfDay(currentDate);
@@ -170,7 +172,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                                           <span className="text-base font-semibold text-foreground">
                                             {format(event.start, compactTimePattern, { locale })}
                                           </span>
-                                          {!locale && (
+                                          {!is24h && (
                                             <span className="text-xs text-muted-foreground uppercase">
                                               {format(event.start, 'a')}
                                             </span>
